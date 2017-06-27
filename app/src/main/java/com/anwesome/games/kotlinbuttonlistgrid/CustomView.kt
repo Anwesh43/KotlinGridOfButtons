@@ -73,8 +73,8 @@ class Button {
     var i:Int = 0
     constructor(w:Float,h:Float,i:Int) {
         this.size = w/6
-        this.x = ((i%3)*(w/3))+size/2
-        this.y = ((i/3)*(h/3))+size/2
+        this.x = ((i%3)*(w/3))+size
+        this.y = ((i/3)*(h/3))+size
         this.i = i
 
     }
