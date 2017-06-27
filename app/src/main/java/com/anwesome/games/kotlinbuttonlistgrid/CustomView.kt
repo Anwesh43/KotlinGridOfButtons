@@ -12,12 +12,27 @@ import android.view.View
  */
 val paint:Paint = Paint(Paint.ANTI_ALIAS_FLAG)
 class CustomView(ctx:Context):View(ctx) {
+    var time:Int = 0
+    var btnGrid:ButtonGrid
+    get():ButtonGrid {
+        return btnGrid
+    }
+    set(btnGrid:ButtonGrid) {
+        this.btnGrid = btnGrid
+    }
     override fun onDraw(canvas:Canvas) {
+        if(time == 0) {
+            var w = canvas.width
+            var h = canvas.height
+            btnGrid = ButtonGrid(w*1.0f,h*1.0f,this)
+        }
+        time++
+        btnGrid?.draw(canvas)
     }
     override fun onTouchEvent(event:MotionEvent):Boolean {
         when(event.action) {
             MotionEvent.ACTION_DOWN -> {
-
+                btnGrid?.handleTap(event.x,event.y)
             }
         }
         return true
@@ -25,21 +40,35 @@ class CustomView(ctx:Context):View(ctx) {
 }
 class ButtonGrid {
     var btns:ArrayList<Button> = ArrayList<Button>()
-    constructor(w:Float,h:Float) {
+    var animationHandler:AnimationHandler
+    get():AnimationHandler {
+        return animationHandler
+    }
+    set(animationHandler:AnimationHandler) {
+        this.animationHandler = animationHandler
+    }
+    constructor(w:Float,h:Float,v:View) {
         init(w,h,9)
+        animationHandler = AnimationHandler(v)
+
     }
     fun init(w:Float,h:Float,n:Int) {
         for(i in 0..9) {
             btns.add(Button(w,h,i))
         }
     }
-    fun draw(canvas:Canvas,paing:Paint) {
+    fun draw(canvas:Canvas) {
         btns.forEach {
             it.draw(canvas)
         }
+        animationHandler?.animate()
     }
-    fun handleTap(x:Float,y:Float):Boolean {
-        return true
+    fun handleTap(x:Float,y:Float) {
+        btns.forEach {
+            if(it.handleTap(x,y)) {
+                animationHandler?.startAnimation(it)
+            }
+        }
     }
 }
 class Button {
