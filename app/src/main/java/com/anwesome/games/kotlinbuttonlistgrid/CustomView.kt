@@ -12,8 +12,12 @@ import android.view.View
  */
 val paint:Paint = Paint(Paint.ANTI_ALIAS_FLAG)
 class CustomView(ctx:Context):View(ctx) {
+    var onSelectionListener:OnSelectionListener?=null
     var time:Int = 0
     var btnGrid:ButtonGrid? = null
+    fun setListener(listener: OnSelectionListener) {
+        this.onSelectionListener = listener
+    }
     override fun onDraw(canvas:Canvas) {
         if(time == 0) {
             var w = canvas.width
@@ -22,7 +26,7 @@ class CustomView(ctx:Context):View(ctx) {
         }
         canvas.drawColor(Color.parseColor("#AA000000"))
         time++
-        btnGrid?.draw(canvas)
+        btnGrid?.draw(canvas,onSelectionListener)
     }
     override fun onTouchEvent(event:MotionEvent):Boolean {
         when(event.action) {
@@ -46,11 +50,11 @@ class ButtonGrid {
             btns.add(Button(w,h,i))
         }
     }
-    fun draw(canvas:Canvas) {
+    fun draw(canvas:Canvas,listener: OnSelectionListener?) {
         btns.forEach {
             it.draw(canvas)
         }
-        animationHandler?.animate()
+        animationHandler?.animate(listener)
     }
     fun handleTap(x:Float,y:Float) {
         btns.forEach {
@@ -125,14 +129,17 @@ data class AnimationHandler(val v:View) {
     var animated:Boolean = false
     var prev:Button? = null
     var curr:Button?= null
-    fun animate() {
+    fun animate(listener: OnSelectionListener?) {
         if(animated) {
             curr?.update()
             prev?.update()
             if(curr?.stopped() == true) {
                 animated = false
+                listener?.onSelect(curr?.i)
+                listener?.onDeSelect(prev?.i)
                 prev = curr
                 curr = null
+
             }
             try {
                 Thread.sleep(50)
