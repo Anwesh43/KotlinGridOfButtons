@@ -2,6 +2,7 @@ package com.anwesome.games.kotlinbuttonlistgrid
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Paint
 import android.view.MotionEvent
 import android.view.View
 
@@ -17,6 +18,14 @@ class CustomView(ctx:Context):View(ctx) {
 
             }
         }
+        return true
+    }
+}
+data class ButtonGrid(val n:Int) {
+    fun draw(canvas:Context,paing:Paint) {
+
+    }
+    fun handleTap(x:Float,y:Float):Boolean {
         return true
     }
 }
