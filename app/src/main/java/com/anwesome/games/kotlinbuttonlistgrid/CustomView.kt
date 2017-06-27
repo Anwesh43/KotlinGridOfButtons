@@ -20,6 +20,7 @@ class CustomView(ctx:Context):View(ctx) {
             var h = canvas.height
             btnGrid = ButtonGrid(w*1.0f,h*1.0f,this)
         }
+        canvas.drawColor(Color.parseColor("#AA000000"))
         time++
         btnGrid?.draw(canvas)
     }
