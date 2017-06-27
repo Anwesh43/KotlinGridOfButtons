@@ -13,13 +13,7 @@ import android.view.View
 val paint:Paint = Paint(Paint.ANTI_ALIAS_FLAG)
 class CustomView(ctx:Context):View(ctx) {
     var time:Int = 0
-    var btnGrid:ButtonGrid
-    get():ButtonGrid {
-        return btnGrid
-    }
-    set(btnGrid:ButtonGrid) {
-        this.btnGrid = btnGrid
-    }
+    var btnGrid:ButtonGrid? = null
     override fun onDraw(canvas:Canvas) {
         if(time == 0) {
             var w = canvas.width
@@ -40,13 +34,7 @@ class CustomView(ctx:Context):View(ctx) {
 }
 class ButtonGrid {
     var btns:ArrayList<Button> = ArrayList<Button>()
-    var animationHandler:AnimationHandler
-    get():AnimationHandler {
-        return animationHandler
-    }
-    set(animationHandler:AnimationHandler) {
-        this.animationHandler = animationHandler
-    }
+    var animationHandler:AnimationHandler? = null
     constructor(w:Float,h:Float,v:View) {
         init(w,h,9)
         animationHandler = AnimationHandler(v)
@@ -80,8 +68,8 @@ class Button {
     var i:Int = 0
     constructor(w:Float,h:Float,i:Int) {
         this.size = w/6
-        this.x = (i%3)*((w/3)+size/2)
-        this.y = (i/3)*((h/3)+size/2)
+        this.x = ((i%3)*(w/3))+size/2
+        this.y = ((i/3)*(h/3))+size/2
         this.i = i
 
     }
@@ -114,7 +102,7 @@ class Button {
     fun update() {
         scale += dir*0.2f
         if(scale > 1.0f) {
-            scale = 0.0f
+            scale = 1f
             dir = 0.0f
         }
         if(scale < 0.0f) {
@@ -134,26 +122,16 @@ class Button {
 }
 data class AnimationHandler(val v:View) {
     var animated:Boolean = false
-    var prev:Button
-    get():Button {
-        return prev
-    }
-    set(btn:Button) {
-        prev = btn
-    }
-    var curr:Button
-    get():Button {
-        return curr
-    }
-    set(btn:Button) {
-        curr = btn
-    }
+    var prev:Button? = null
+    var curr:Button?= null
     fun animate() {
         if(animated) {
             curr?.update()
             prev?.update()
-            if(curr?.stopped()) {
+            if(curr?.stopped() == true) {
                 animated = false
+                prev = curr
+                curr = null
             }
             try {
                 Thread.sleep(50)
@@ -168,6 +146,8 @@ data class AnimationHandler(val v:View) {
             curr = btn
             curr?.startUpdating(1.0f)
             prev?.startUpdating(-1.0f)
+            animated = true
+            v?.postInvalidate()
         }
     }
 
