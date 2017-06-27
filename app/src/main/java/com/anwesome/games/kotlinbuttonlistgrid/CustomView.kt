@@ -93,10 +93,53 @@ class Button {
             dir = 0.0f
         }
     }
+    fun stopped():Boolean {
+        return dir == 0.0f
+    }
     fun startUpdating(dir:Float) {
         this.dir = dir
     }
     override fun hashCode():Int {
         return this.i
     }
+}
+data class AnimationHandler(val v:View) {
+    var animated:Boolean = false
+    var prev:Button
+    get():Button {
+        return prev
+    }
+    set(btn:Button) {
+        prev = btn
+    }
+    var curr:Button
+    get():Button {
+        return curr
+    }
+    set(btn:Button) {
+        curr = btn
+    }
+    fun animate() {
+        if(animated) {
+            curr?.update()
+            prev?.update()
+            if(curr?.stopped()) {
+                animated = false
+            }
+            try {
+                Thread.sleep(50)
+                v.invalidate()
+            } catch (ex:Exception) {
+
+            }
+        }
+    }
+    fun startAnimation(btn:Button) {
+        if(!animated && curr == null) {
+            curr = btn
+            curr?.startUpdating(1.0f)
+            prev?.startUpdating(-1.0f)
+        }
+    }
+
 }
